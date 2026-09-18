@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment 2.2.1 | Pagination & Sorting API</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Read API Lab home"><span class="brand-mark">R</span><span>read.api<span class="brand-dot">/</span>lab</span></a>
+      <div class="status"><span class="status-pulse"></span>API ONLINE <span class="status-divider"></span> SPRING DATA</div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div class="intro-copy">
+          <p class="eyebrow">EXPERIMENT 2.2.1 <span></span> CO3 / CO4</p>
+          <h1>Read less.<br><em>Understand more.</em></h1>
+          <p class="lede">A working field guide to pageable REST APIs. Tune the request, watch the payload stay lean, and see how Spring Data handles the heavy lifting.</p>
+          <div class="student-line"><span class="student-avatar">SF</span><div><strong>Sam Fawaz Hadi AL-Basara</strong><small>UID-24BAI70236 <span>•</span> Full Stack - II</small></div></div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">DATASET</span>
+          <strong id="totalMetric">--</strong>
+          <span>ARTICLES IN CATALOGUE</span>
+          <div class="metric-line"><i></i></div>
+          <small>IN-MEMORY H2 DATABASE</small>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Article explorer">
+        <div class="workspace-head">
+          <div><p class="section-kicker">LIVE EXPLORER</p><h2>Browse the knowledge stream</h2><p class="workspace-note">Pagination and sorting are applied by the REST API.</p></div>
+          <div class="request-chip"><span>GET</span> /api/articles</div>
+        </div>
+        <div class="controls">
+          <label>SHOW <select id="sizeSelect"><option value="4">4</option><option value="6" selected>6</option><option value="8">8</option><option value="12">12</option></select> PER PAGE</label>
+          <label>SORT BY <select id="sortSelect"><option value="publishedOn,desc">Newest first</option><option value="publishedOn,asc">Oldest first</option><option value="views,desc">Most viewed</option><option value="readTime,asc">Quickest read</option><option value="title,asc">Title A-Z</option></select></label>
+          <button class="reset-button" id="resetButton" type="button">Reset view <span>↗</span></button>
+        </div>
+        <div class="results-meta"><span id="resultSummary">Loading articles...</span><span class="latency" id="latency">-- ms response</span></div>
+        <div class="article-grid" id="articleGrid"><div class="loading"><span></span><span></span><span></span></div></div>
+        <div class="pagination"><button class="arrow-button" id="prevButton" aria-label="Previous page">←</button><div id="pageButtons"></div><button class="arrow-button" id="nextButton" aria-label="Next page">→</button></div>
+      </section>
+
+      <section class="under-panel">
+        <div class="concept"><p class="section-kicker">WHAT IS HAPPENING</p><h2>One request.<br><span>Only what you need.</span></h2></div>
+        <div class="concept-copy"><p>The API returns a Spring Data <code>Page&lt;Article&gt;</code>, not a giant list. Each change below becomes a query parameter and the database does the filtering, ordering, and slicing.</p><div class="code-line"><span class="code-method">GET</span><span id="codeUrl">/api/articles?page=0&amp;size=6&amp;sort=publishedOn,desc</span></div></div>
+        <div class="benefit-list"><div><b>01</b><span>Reduced server load</span></div><div><b>02</b><span>Faster response times</span></div><div><b>03</b><span>Scales with your dataset</span></div></div>
+      </section>
+    </main>
+    <footer><span>FULL STACK - II <b>•</b> SPRING BOOT LAB <b>•</b> SAM FAWAZ HADI AL-BASARA</span><span>PAGEABLE <b>•</b> SORTABLE <b>•</b> SCALABLE</span></footer>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

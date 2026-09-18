@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiment 3.1 - JWT Authentication System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- React & Babel CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --bg-card: rgba(18, 26, 44, 0.75);
+      --bg-card-border: rgba(255, 255, 255, 0.08);
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --accent-pink: #ec4899;
+      --accent-emerald: #10b981;
+      --jwt-header: #ef4444;
+      --jwt-payload: #a855f7;
+      --jwt-signature: #06b6d4;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .app-container { max-width: 1200px; margin: 0 auto; padding: 24px 16px 40px; }
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .exp-header { margin-bottom: 28px; padding: 20px 24px; }
+    .exp-header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--bg-card-border); }
+    .exp-badge { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; font-weight: 700; font-size: 0.85rem; padding: 6px 12px; border-radius: 8px; }
+    .exp-heading { font-size: 1.35rem; font-weight: 700; background: linear-gradient(90deg, #ffffff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .status-badge { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; }
+    .status-badge.active { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-badge.inactive { background: rgba(239, 68, 68, 0.15); color: var(--jwt-header); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: currentColor; }
+    
+    .student-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 16px; }
+    .student-info-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-dim); font-weight: 600; }
+    .student-info-value { font-size: 0.92rem; color: var(--text-main); font-weight: 500; display: block; margin-top: 2px; }
+
+    .auth-wrapper { display: flex; justify-content: center; align-items: center; padding: 20px 0; }
+    .login-box { width: 100%; max-width: 440px; padding: 32px; }
+    .login-header { text-align: center; margin-bottom: 24px; }
+    .login-title { font-size: 1.5rem; font-weight: 700; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+    .form-input { width: 100%; padding: 12px 14px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--bg-card-border); border-radius: 10px; color: white; font-size: 0.95rem; outline: none; }
+    .form-input:focus { border-color: var(--accent-blue); }
+    
+    .btn-primary { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+    .btn-demo { width: 100%; margin-top: 12px; padding: 10px; background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.2); color: var(--accent-cyan); border-radius: 10px; font-size: 0.85rem; cursor: pointer; }
+    .error-alert { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; }
+
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; }
+    @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+    .profile-card, .inspector-card { padding: 24px; }
+    .avatar-circle { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 12px; }
+    .role-tag { display: inline-block; padding: 3px 10px; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); color: #c084fc; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 14px; background: rgba(15, 23, 42, 0.4); border-radius: 10px; margin-top: 10px; }
+    
+    .btn-danger { width: 100%; margin-top: 24px; padding: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    
+    .token-raw-box { background: rgba(15, 23, 42, 0.8); border: 1px solid var(--bg-card-border); border-radius: 12px; padding: 14px; font-family: var(--font-mono); font-size: 0.82rem; word-break: break-all; margin: 16px 0; }
+    .token-header-part { color: var(--jwt-header); font-weight: 600; }
+    .token-payload-part { color: var(--jwt-payload); font-weight: 600; }
+    .token-signature-part { color: var(--jwt-signature); font-weight: 600; }
+
+    .jwt-part-box { border-radius: 12px; padding: 14px; background: rgba(15, 23, 42, 0.5); margin-bottom: 12px; border-left: 4px solid var(--text-dim); }
+    .header-box { border-left-color: var(--jwt-header); }
+    .payload-box { border-left-color: var(--jwt-payload); }
+    .signature-box { border-left-color: var(--jwt-signature); }
+    .code-block { font-family: var(--font-mono); font-size: 0.82rem; white-space: pre-wrap; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // authService.js
+    const authenticateUser = (username, password) => {
+      const validUser = {
+        username: "SamFawaz",
+        password: "24BAI70236",
+        email: "samfawaz.24bai70236@cumail.in",
+        role: "Administrator",
+      };
+
+      const isSam = (username.toLowerCase() === "samfawaz" || username.toLowerCase() === "sam") && password === "24BAI70236";
+      const isTeacher = username === "Lovleen" && password === "E20454";
+
+      if (isSam || isTeacher) {
+        const activeUser = isSam ? validUser : {
+          username: "Lovleen",
+          email: "Lovleen.e20454@cumail.in",
+          role: "Administrator",
+        };
+
+        const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+        const payload = btoa(JSON.stringify({
+          username: activeUser.username,
+          email: activeUser.email,
+          role: activeUser.role,
+          iat: Math.floor(Date.now() / 1000)
+        }));
+        const signature = btoa("jwt-signature");
+        return `${header}.${payload}.${signature}`;
+      }
+      return null;
+    };
+
+    // token.js
+    const getUserFromToken = () => {
+      const token = localStorage.getItem("token");
+      if (!token) return null;
+      try {
+        const parts = token.split(".");
+        if (parts.length !== 3) return null;
+        return JSON.parse(atob(parts[1]));
+      } catch (e) {
+        return null;
+      }
+    };
+
+    const getFullTokenDetails = () => {
+      const token = localStorage.getItem("token");
+      if (!token) return null;
+      const parts = token.split(".");
+      if (parts.length !== 3) return null;
+      try {
+        return {
+          rawToken: token,
+          rawHeader: parts[0],
+          rawPayload: parts[1],
+          rawSignature: parts[2],
+          header: JSON.parse(atob(parts[0])),
+          payload: JSON.parse(atob(parts[1])),
+          signature: atob(parts[2]),
+        };
+      } catch (e) {
+        return null;
+      }
+    };
+
+    // Header Component
+    const ExperimentHeader = ({ isLoggedIn }) => (
+      <header className="glass-card exp-header">
+        <div className="exp-header-top">
+          <div>
+            <span className="exp-badge">EXPERIMENT 3.1</span>
+            <h1 className="exp-heading" style={{ marginTop: '8px' }}>JWT Authentication & Session Management</h1>
+          </div>
+          <div className={`status-badge ${isLoggedIn ? 'active' : 'inactive'}`}>
+            <span className="status-dot"></span>
+            {isLoggedIn ? 'Authenticated (Session Active)' : 'Unauthenticated (Logged Out)'}
+          </div>
+        </div>
+
+        <div className="student-grid">
+          <div>
+            <span className="student-info-label">Student Name</span>
+            <span className="student-info-value">Sam Fawaz Hadi AL-Basara</span>
+          </div>
+          <div>
+            <span className="student-info-label">UID / Branch</span>
+            <span className="student-info-value">24BAI70236 (CSE-AIML)</span>
+          </div>
+          <div>
+            <span className="student-info-label">Subject & Code</span>
+            <span className="student-info-value">Full Stack - II (24CSP-337)</span>
+          </div>
+          <div>
+            <span className="student-info-label">Section & Date</span>
+            <span className="student-info-value">24AIT_NTPP2[A] | 22/07/2026</span>
+          </div>
+        </div>
+      </header>
+    );
+
+    // Login Component
+    const Login = ({ login }) => {
+      const [username, setUsername] = useState('');
+      const [password, setPassword] = useState('');
+      const [error, setError] = useState('');
+
+      const handleLogin = (e) => {
+        e.preventDefault();
+        setError('');
+        const token = authenticateUser(username, password);
+        if (token) {
+          localStorage.setItem("token", token);
+          login();
+        } else {
+          setError("Invalid Username or Password");
+        }
+      };
+
+      return (
+        <div className="auth-wrapper">
+          <div className="glass-card login-box">
+            <div className="login-header">
+              <h2 className="login-title">JWT Login Portal</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '4px' }}>
+                Stateless Authentication System
+              </p>
+            </div>
+
+            {error && <div className="error-alert">⚠️ {error}</div>}
+
+            <form onSubmit={handleLogin}>
+              <div className="form-group">
+                <label className="form-label">Username</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Username (e.g. SamFawaz)"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-input"
+                  placeholder="Password (e.g. 24BAI70236)"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn-primary">Sign In & Issue JWT</button>
+            </form>
+
+            <button
+              type="button"
+              className="btn-demo"
+              onClick={() => { setUsername('SamFawaz'); setPassword('24BAI70236'); setError(''); }}
+            >
+              ✨ Auto-fill Demo Credentials (SamFawaz / 24BAI70236)
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    // Dashboard Component
+    const Dashboard = ({ logout }) => {
+      const user = getUserFromToken();
+      const tokenDetails = getFullTokenDetails();
+
+      return (
+        <div className="dashboard-grid">
+          <div className="glass-card profile-card">
+            <div className="avatar-circle">
+              {user?.username ? user.username.charAt(0) : 'U'}
+            </div>
+            <h2>{user?.username}</h2>
+            <span className="role-tag">{user?.role}</span>
+
+            <div style={{ marginTop: '20px' }}>
+              <div className="detail-row">
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Email</span>
+                <span style={{ fontWeight: '500' }}>{user?.email}</span>
+              </div>
+              <div className="detail-row">
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Role</span>
+                <span style={{ fontWeight: '500' }}>{user?.role}</span>
+              </div>
+              <div className="detail-row">
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Session Type</span>
+                <span style={{ color: 'var(--accent-emerald)', fontWeight: '500' }}>Stateless JWT</span>
+              </div>
+            </div>
+
+            <button onClick={logout} className="btn-danger">🔒 Logout (Clear Session Token)</button>
+          </div>
+
+          <div className="glass-card inspector-card">
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>Decoded JWT Inspector</h3>
+            
+            <div className="token-raw-box">
+              {tokenDetails ? (
+                <>
+                  <span className="token-header-part">{tokenDetails.rawHeader}</span>.
+                  <span className="token-payload-part">{tokenDetails.rawPayload}</span>.
+                  <span className="token-signature-part">{tokenDetails.rawSignature}</span>
+                </>
+              ) : 'No token found'}
+            </div>
+
+            <div className="jwt-part-box header-box">
+              <div style={{ color: 'var(--jwt-header)', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '6px' }}>HEADER: ALGORITHM & TOKEN TYPE</div>
+              <pre className="code-block">{tokenDetails ? JSON.stringify(tokenDetails.header, null, 2) : '{}'}</pre>
+            </div>
+
+            <div className="jwt-part-box payload-box">
+              <div style={{ color: 'var(--jwt-payload)', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '6px' }}>PAYLOAD: DATA / CLAIMS</div>
+              <pre className="code-block">{tokenDetails ? JSON.stringify(tokenDetails.payload, null, 2) : '{}'}</pre>
+            </div>
+
+            <div className="jwt-part-box signature-box">
+              <div style={{ color: 'var(--jwt-signature)', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '6px' }}>SIGNATURE</div>
+              <pre className="code-block">{tokenDetails ? tokenDetails.signature : ''}</pre>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Main App Component
+    const App = () => {
+      const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+      useEffect(() => {
+        if (getUserFromToken()) setIsLoggedIn(true);
+      }, []);
+
+      const login = () => setIsLoggedIn(true);
+      const logout = () => {
+        localStorage.removeItem("token");
+        setIsLoggedIn(false);
+      };
+
+      return (
+        <div className="app-container">
+          <ExperimentHeader isLoggedIn={isLoggedIn} />
+          {isLoggedIn ? <Dashboard logout={logout} /> : <Login login={login} />}
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

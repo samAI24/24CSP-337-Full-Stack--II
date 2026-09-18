@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Experiment 6.2 | Caching & Query Optimization</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="title-group">
+          <span class="eyebrow">EXPERIMENT 6.2 · Caching & Query Optimization</span>
+          <h1>Backend Performance Lab</h1>
+        </div>
+        <div class="student-panel">
+          <span class="student-label">Student</span>
+          <strong>Sam Fawaz Hadi AL-Basara</strong>
+          <small>UID: 24BAI70236</small>
+        </div>
+      </header>
+
+      <section class="summary-grid">
+        <article class="info-card concept-card">
+          <h2>Concept focus</h2>
+          <ul>
+            <li>N+1 query problem</li>
+            <li>JOIN FETCH optimization</li>
+            <li>Cache strategies</li>
+            <li>Native SQL execution</li>
+            <li>Response-time benchmarking</li>
+          </ul>
+        </article>
+
+        <article class="info-card metric-card">
+          <h2>Live benchmark</h2>
+          <div class="metric-pair">
+            <div>
+              <span class="metric-label">Response time</span>
+              <strong id="heroTime">0 ms</strong>
+            </div>
+            <div>
+              <span class="metric-label">Queries</span>
+              <strong id="queryCount">0</strong>
+            </div>
+          </div>
+          <p id="lastUpdated">Ready for benchmarking.</p>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Add User</h2>
+        </div>
+        <form id="userForm" class="user-form">
+          <input id="uid" type="text" placeholder="UID" required />
+          <input id="name" type="text" placeholder="Name" required />
+          <input id="city" type="text" placeholder="City" required />
+          <input id="country" type="text" placeholder="Country" required />
+          <button type="submit">Add User</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Query optimization tests</h2>
+        </div>
+        <div class="button-row">
+          <button class="mode-btn danger" data-mode="normal">Normal Query</button>
+          <button class="mode-btn primary" data-mode="optimized">JOIN FETCH</button>
+          <button class="mode-btn purple" data-mode="cached">Cached Query</button>
+          <button class="mode-btn orange" data-mode="native">Native SQL</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Sort users</h2>
+        </div>
+        <div class="button-row">
+          <button class="mode-btn dark" data-mode="sort-id">Sort by ID</button>
+          <button class="mode-btn dark" data-mode="sort-name">Sort by Name</button>
+          <button class="mode-btn ghost" id="clearCache">Clear Cache</button>
+        </div>
+      </section>
+
+      <div id="status" class="status-message success">System ready.</div>
+
+      <section class="panel table-panel">
+        <div class="panel-header">
+          <h2>User directory</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>UID</th>
+                <th>Name</th>
+                <th>City</th>
+                <th>Country</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
+

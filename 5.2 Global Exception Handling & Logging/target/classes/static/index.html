@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17221e">
+    <title>Experiment 5.2 | Observable User Registry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main class="shell">
+    <header class="topbar"><a class="brand" href="/"><span class="brand-mark">+</span><span>observable<span class="brand-soft">/registry</span></span></a><div class="live"><span class="pulse"></span> API online <strong>localhost:8080</strong></div></header>
+    <section class="hero"><div class="hero-copy"><p class="eyebrow">Experiment 5.2 / implementation 1</p><h1>User records,<br><em>properly traced.</em></h1><p class="lede">A working Spring Boot lab for global exception handling, structured request logs, CRUD operations, and correlation-based debugging.</p><div class="student-line"><span class="student-label">submitted by</span><strong>Sam Fawaz Hadi AL-Basara</strong><span class="uid-chip">UID- 24BAI70236</span></div></div><div class="hero-orbit" aria-hidden="true"><span></span><span></span><span></span></div></section>
+    <section class="metrics" aria-label="Experiment capabilities"><div><span class="metric-number" id="userCount">--</span><span>registered users</span></div><div><span class="metric-number" id="requestCount">0</span><span>requests this session</span></div><div><span class="metric-number accent-text">MDC</span><span>trace context</span></div></section>
+    <section class="workspace">
+        <article class="panel form-panel"><div class="panel-heading"><div><p class="kicker">01 / user registry</p><h2 id="formTitle">Create a user</h2></div><span id="formMode" class="badge neutral">new record</span></div><form id="userForm"><label for="uid">University UID</label><input id="uid" name="uid" placeholder="e.g. 24BAI70236" maxlength="30" required><label for="name">Full name</label><input id="name" name="name" placeholder="Enter the user's full name" maxlength="100" required><div class="form-actions"><button class="button primary" type="submit" id="submitButton">Add user <span>+</span></button><button class="button quiet" type="button" id="clearButton">Clear</button></div></form><p class="form-note">UIDs are unique. Select <strong>Edit</strong> from the table to update a name.</p></article>
+        <article class="panel trace-panel"><div class="panel-heading"><div><p class="kicker">02 / request context</p><h2>Correlation ID</h2></div><span class="badge violet">MDC</span></div><label for="correlationId">Trace label for the next request</label><div class="input-row"><input id="correlationId" value="lab-session-337" maxlength="80"><button id="copyButton" class="icon-button" type="button" title="Copy correlation ID" aria-label="Copy correlation ID">⧉</button></div><div class="trace-preview"><span class="trace-dot"></span><code id="traceValue">lab-session-337</code><span class="trace-label">X-Correlation-ID</span></div><p class="hint">The filter echoes this ID in every response and places it in the structured logging context.</p></article>
+        <article class="panel search-panel"><div class="panel-heading"><div><p class="kicker">03 / lookup</p><h2>Find a user</h2></div><span class="badge amber">GET</span></div><div class="search-row"><input id="searchUid" placeholder="Search by UID" maxlength="30"><button class="button dark" id="searchButton" type="button">Search <span>↗</span></button></div><div id="searchResult" class="search-result empty">Enter a UID to inspect a single record.</div></article>
+        <article class="panel exception-panel"><div class="panel-heading"><div><p class="kicker">04 / controlled failure</p><h2>Exception lab</h2></div><span class="badge red">404</span></div><p class="body-copy">Request a missing user and inspect the standardized <code>ApiError</code> envelope from <code>@RestControllerAdvice</code>.</p><button class="button outline" id="errorButton" type="button">Trigger not-found response <span>↗</span></button></article>
+    </section>
+    <section class="panel table-panel"><div class="table-heading"><div><p class="kicker">05 / live records</p><h2>Registered users</h2></div><button class="button quiet" id="refreshButton" type="button">↻ <span>Refresh list</span></button></div><div class="table-wrap"><table><thead><tr><th>UID</th><th>Name</th><th>Actions</th></tr></thead><tbody id="userTableBody"><tr><td colspan="3" class="table-empty">Loading records...</td></tr></tbody></table></div></section>
+    <section class="response-strip"><div><span class="kicker">latest response</span><strong id="responseStatus">idle</strong></div><pre id="responseBody">Run an interaction to inspect the JSON response.</pre></section><div id="message" class="toast" role="status" aria-live="polite"></div><footer><span>SPRING BOOT / SLF4J / LOGBACK</span><span>GLOBAL ERRORS · STRUCTURED LOGS · TRACEABLE REQUESTS</span></footer>
+</main><script src="/app.js"></script>
+</body>
+</html>
